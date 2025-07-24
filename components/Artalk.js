@@ -1,9 +1,11 @@
 import { siteConfig } from '@/lib/config'
 import { loadExternalResource } from '@/lib/utils'
+// import { loadExternalResource } from '@/lib/utils'
 import { useEffect } from 'react'
 
 /**
- * Artalk 自托管评论系统 @see https://artalk.js.org/
+ * Giscus评论 @see https://giscus.app/zh-CN
+ * Contribute by @txs https://github.com/txs/NotionNext/commit/1bf7179d0af21fb433e4c7773504f244998678cb
  * @returns {JSX.Element}
  * @constructor
  */
@@ -20,32 +22,18 @@ const Artalk = ({ siteInfo }) => {
 
   const initArtalk = async () => {
     await loadExternalResource(artalkCss, 'css')
-    const artalk = window?.Artalk?.init({
-      server: artalkServer,
-      el: '#artalk',
+    window?.Artalk?.init({
+      server: artalkServer, // 后端地址
+      el: '#artalk', // 容器元素
       locale: artalkLocale,
-      site: site,
-      darkMode: document.documentElement.classList.contains('dark')
+      //   pageKey: '/post/1', // 固定链接 (留空自动获取)
+      //   pageTitle: '关于引入 Artalk 的这档子事', // 页面标题 (留空自动获取)
+      site: site // 你的站点名
     })
-
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.attributeName === 'class') {
-          const isDark = document.documentElement.classList.contains('dark')
-          artalk?.setDarkMode(isDark)
-        }
-      })
-    })
-
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['class']
-    })
-
-    return () => observer.disconnect()
   }
-
-  return <div id="artalk"></div>
+  return (
+        <div id="artalk"></div>
+  )
 }
 
 export default Artalk

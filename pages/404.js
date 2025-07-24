@@ -1,7 +1,7 @@
-import BLOG from '@/blog.config'
+import { getGlobalData } from '@/lib/notion/getNotionData'
+import { useRouter } from 'next/router'
+import { getLayoutByTheme } from '@/themes/theme'
 import { siteConfig } from '@/lib/config'
-import { getGlobalData } from '@/lib/db/getSiteData'
-import { DynamicLayout } from '@/themes/theme'
 
 /**
  * 404
@@ -9,14 +9,18 @@ import { DynamicLayout } from '@/themes/theme'
  * @returns
  */
 const NoFound = props => {
-  const theme = siteConfig('THEME', BLOG.THEME, props.NOTION_CONFIG)
-  return <DynamicLayout theme={theme} layoutName='Layout404' {...props} />
+  const meta = { title: `${siteConfig('TITLE')} | 页面找不到啦`, image: siteConfig('HOME_BANNER_IMAGE') }
+
+  props = { ...props, meta }
+
+  // 根据页面路径加载不同Layout文件
+  const Layout = getLayoutByTheme({ theme: siteConfig('THEME'), router: useRouter() })
+
+  return <Layout {...props} />
 }
 
-export async function getStaticProps(req) {
-  const { locale } = req
-
-  const props = (await getGlobalData({ from: '404', locale })) || {}
+export async function getStaticProps () {
+  const props = (await getGlobalData({ from: '404' })) || {}
   return { props }
 }
 
